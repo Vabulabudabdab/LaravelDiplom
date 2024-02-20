@@ -6,6 +6,7 @@ namespace Tests\Feature;
 use App\Http\Controllers\UserController;
 use App\Models\User;
 use GuzzleHttp\Psr7\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Tests\TestCase;
 
@@ -34,4 +35,24 @@ class ExampleTest extends TestCase {
 
         $response->assertStatus(200);
     }
+
+    public function testanotherRegister(): void {
+        $response = $this->get('/loginUser');
+
+    }
+    public function testanotherLogin(Request $request): void {
+        $email = $request->post('email');
+
+        $password = $request->post('password');
+
+        if (Auth::attempt(['email' => $email, 'password' => $password])) {
+            echo "true";
+
+        } else {
+            $request->session()->flash('notValid', 'Неверный логин или пароль');
+
+        }
+    }
+
+
 }

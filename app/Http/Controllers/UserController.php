@@ -2,13 +2,11 @@
 namespace App\Http\Controllers;
 session_start();
 
-use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Testing\Fluent\Concerns\Has;
+use Illuminate\Support\Facades\Session;
 
 class UserController extends Controller {
 
@@ -43,6 +41,10 @@ class UserController extends Controller {
 
         $password = $request->post('password');
 
+        $session = DB::table('users')->select('email')->where('email', $email)->get();
+
+        $ts = Session::put('email', $email);
+        $test = Session::get('email');
         if (Auth::attempt(['email' => $email, 'password' => $password])) {
             echo "true";
             return redirect('/');
@@ -50,5 +52,6 @@ class UserController extends Controller {
             $request->session()->flash('notValid', 'Неверный логин или пароль');
             return redirect('/login');
         }
+
     }
 }

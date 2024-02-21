@@ -50,7 +50,6 @@ class ExampleTest extends TestCase {
 
         } else {
             $request->session()->flash('notValid', 'Неверный логин или пароль');
-
         }
     }
 

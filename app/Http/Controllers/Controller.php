@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Routing\Controller as BaseController;
+use Illuminate\Support\Facades\DB;
 
 class Controller extends BaseController
 {
@@ -13,7 +14,8 @@ class Controller extends BaseController
     }
 
     function users() {
-        return view('users');
+        $user = DB::table('users')->select('*')->get();
+        return view('users', ['users' => $user]);
     }
 
     function login() {
@@ -24,16 +26,22 @@ class Controller extends BaseController
         return view('page_profile');
     }
 
-    function security() {
-        return view('security');
+    function security($id) {
+        $user = DB::table('users')->select('*')->where('id', $id)->get()->first();
+
+        return view('security', ['users' => $user]);
     }
 
-    function changeStatus() {
-        return view('status');
+    function changeStatus($id) {
+        $user = DB::table('users')->select('*')->where('id', $id)->get()->first();
+
+        return view('status', ['users' => $user]);
     }
 
-    function media() {
-        return view('media');
+    function media($id) {
+        $user = DB::table('users')->select('*')->where('id', $id)->get()->first();
+
+        return view('media', ['users' => $user]);
     }
 
     function createUser() {
@@ -43,5 +51,4 @@ class Controller extends BaseController
     function editUser() {
         return view('edit');
     }
-
 }

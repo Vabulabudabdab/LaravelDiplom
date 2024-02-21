@@ -99,24 +99,29 @@ class UserController extends Controller
 
         $newpass = $request->post('newpassword');
 
+
+        $hash = Hash::make($newpass);
         $query = DB::table('users')->select('*')->where('id', $id)->get()->first();
 
-        $fetchPass = DB::table('users')->select('password')->where('id', $id)->first();
-        dd(Hash::check($fetchPass, $newpass));
-        $user = User::find($id);
-        $user->password = Hash::make($newpass);
-        $user->save();
+        $existsUser = DB::table('users')->select('*')->where('email', $email)->exists();
 
-        DB::table('users')->where('id', $id)->update(
-            ['email' => $email]
-        );
+        if($existsUser) {
+            Session::put('alrexistsemail', 'Данный email уже занят!');
+            return redirect('/');
+        } else {
+            $user = User::find($id);
 
-//        DB::table('users')->where('id', $id)->update(
-//            [
-//             'email' => $email,
-//             'password' => $newpass
-//            ]
-//        );
+            $user->password = Hash::make($newpass);
+
+            $user->save();
+
+            DB::table('users')->where('id', $id)->update(
+                ['email' => $email]
+            );
+        }
+
+
+
         return redirect('/');
 
     }

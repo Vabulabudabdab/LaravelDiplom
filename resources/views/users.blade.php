@@ -37,6 +37,12 @@
         </nav>
 
         <main id="js-page-content" role="main" class="page-content mt-3">
+            @if(!empty(Session::get('alrexistsemail')))
+                <div class="alert alert-success">
+                    {{Session::get('alrexistsemail')}}
+                    {{session()->forget('alrexistsemail')}}
+                </div>
+            @endif
             <div class="alert alert-success">
                 Профиль успешно обновлен.{{Session::get('email')}}
             </div>

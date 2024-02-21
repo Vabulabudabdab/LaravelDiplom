@@ -34,5 +34,4 @@ Route::post('/StatusChange/{id}', [App\Http\Controllers\UserController::class, '
 
 Route::post('/changeMail/{id}', [App\Http\Controllers\UserController::class, 'editMail']);
 
-Route::post('/forgot-password/{id}', [App\Http\Controllers\ForgotPasswordController::class, 'statusEdit'])->middleware('guest')->name('password.request');
-
+Route::post('/edituser/{id}', [App\Http\Controllers\UserController::class, 'editMail']);

@@ -30,6 +30,7 @@
                     <li class="nav-item">
                         <a class="nav-link" href="/logout">Выйти</a>
                     </li>
+                @endif
             </ul>
         </div>
     </nav>
@@ -40,7 +41,8 @@
             </h1>
 
         </div>
-        <form action="" method="post">
+        <form action="/editdate/{{$users->id}}" method="post">
+            {{csrf_field()}}
             <div class="row">
                 <div class="col-xl-6">
                     <div id="panel-1" class="panel">
@@ -52,25 +54,25 @@
                                 <!-- username -->
                                 <div class="form-group">
                                     <label class="form-label" for="simpleinput">Имя</label>
-                                    <input type="text" id="simpleinput" class="form-control" value="Иван иванов">
+                                    <input type="text" id="simpleinput" class="form-control" value="{{old('name')}}" name="name">
                                 </div>
 
                                 <!-- title -->
                                 <div class="form-group">
                                     <label class="form-label" for="simpleinput">Место работы</label>
-                                    <input type="text" id="simpleinput" class="form-control" value="Marlin Веб-разработчик">
+                                    <input type="text" id="simpleinput" class="form-control" value="{{old('workplace')}}" name="workplace">
                                 </div>
 
                                 <!-- tel -->
                                 <div class="form-group">
                                     <label class="form-label" for="simpleinput">Номер телефона</label>
-                                    <input type="text" id="simpleinput" class="form-control" value="8 888 8888 88">
+                                    <input type="text" id="simpleinput" class="form-control" value="{{old('telephone')}}" name="telephone">
                                 </div>
 
                                 <!-- address -->
                                 <div class="form-group">
                                     <label class="form-label" for="simpleinput">Адрес</label>
-                                    <input type="text" id="simpleinput" class="form-control" value="Восточные Королевства, Штормград">
+                                    <input type="text" id="simpleinput" class="form-control" value="{{old('adress')}}" name="adress">
                                 </div>
                                 <div class="col-md-12 mt-3 d-flex flex-row-reverse">
                                     <button class="btn btn-warning">Редактировать</button>

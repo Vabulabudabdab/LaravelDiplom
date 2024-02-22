@@ -49,6 +49,11 @@
                 <div class="alert alert-success">
                     {{session()->get('notValid')}}
                 </div>   {{session()->forget('notValid')}}
+
+            @elseif(!empty(session()->get('existsLogin')))
+                <div class="alert alert-success">
+                    {{session()->get('existsLogin')}}
+                </div>   {{session()->forget('existsLogin')}}
             @endif
 
             <form action="/loginUser" method="post">

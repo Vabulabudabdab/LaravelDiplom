@@ -4,20 +4,19 @@ session_start();
 
 use App\Models\User;
 use App\Services\ImageService;
-use Illuminate\Auth\Events\PasswordReset;
-use Illuminate\Auth\Notifications\ResetPassword;
+use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Session;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Testing\Fluent\Concerns\Has;
-use function Laravel\Prompts\table;
 
 class UserController extends Controller
 {
+    private $user;
+    public function __construct(UserService $userService) {
+        $this -> user = $userService;
+    }
 
     function register(Request $request)
     {
@@ -46,7 +45,10 @@ class UserController extends Controller
 
     function loginUser(Request $request)
     {
-
+        if(!empty(Session::get('email'))) {
+            $request->session()->flash('existsLogin', 'Вы уже вошли');
+            return redirect('/login');
+        }
         $email = $request->post('email');
 
         $password = $request->post('password');
@@ -125,5 +127,67 @@ class UserController extends Controller
         return redirect('/');
 
     }
+
+    function editdate(Request $request, $id) {
+
+        $name = $request->post('name');
+
+        $workplace = $request->post('workplace');
+
+        $telephone = $request->post('telephone');
+
+        $adress =  $request->post('adress');
+
+        DB::table('users')->where('id', $id)->update(
+            ['name' => $name, 'workplace' => $workplace, 'telephone' => $telephone, 'adress' => $adress]
+        );
+        return redirect('/');
+    }
+
+    function newUser(Request $request) {
+
+        $name = $request->post('name');
+
+        $workplace = $request->post('workplace');
+
+        $telephone = $request->post('telephone');
+
+        $adress =  $request->post('adress');
+
+        $email = $request->post('email');
+
+        $password = $request->post('password');
+
+        $status = $request->post('status');
+
+        $avatar = $request->post('avatar');
+
+        $vk = $request->post('vk');
+
+        $telegram = $request->post('telegram');
+
+        $instagram = $request->post('instagram');
+
+        $image = $request->file('avatar');
+
+        $hashedPassword = Hash::make($password);
+
+        $test = DB::table('users')->select('email')->where('email', $email)->exists();
+
+        if ($test) {
+            $request->session()->flash('cantcreate', 'Данный пользователь уже существует');
+            return redirect('/');
+        } else {
+            DB::table('users')->insert(
+                ['email' => $email, 'password' => $hashedPassword, 'name' => $name, 'workplace' => $workplace, 'telephone' => $telephone,
+                 'adress' => $adress,'status' => $status, 'vk' => $vk, 'telegram' => $telegram, 'instagram' => $instagram,'avatar' => $image->store('uploads'), 'updated_at' => 0]
+            );
+
+            $request->session()->flash('successCreate', 'Пользователь успешно добавлен!');
+            return redirect('/');
+        }
+
+    }
+
 }
 

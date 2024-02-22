@@ -48,7 +48,10 @@ class Controller extends BaseController
         return view('create_user');
     }
 
-    function editUser() {
-        return view('edit');
+    function editUser($id) {
+
+        $user = DB::table('users')->select('*')->where('id', $id)->get()->first();
+
+        return view('edit', ['users' => $user]);
     }
 }

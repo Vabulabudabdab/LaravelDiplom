@@ -43,6 +43,17 @@
                     {{session()->forget('alrexistsemail')}}
                 </div>
             @endif
+
+            @if(!empty(session()->get('cantcreate')))
+                    <div class="alert alert-success">
+                       {{Session::get('cantcreate')}}
+                    </div>{{session()->forget('cantcreate')}}
+
+            @elseif(!empty(session()->get('successCreate')))
+                    <div class="alert alert-success">
+                        {{Session::get('successCreate')}}
+                    </div>{{session()->forget('successCreate')}}
+            @endif
             <div class="alert alert-success">
                 Профиль успешно обновлен.{{Session::get('email')}}
             </div>
@@ -53,7 +64,7 @@
             </div>
             <div class="row">
                 <div class="col-xl-12">
-                    <a class="btn btn-success" href="create_user.html">Добавить</a>
+                    <a class="btn btn-success" href="/create">Добавить</a>
 
                     <div class="border-faded bg-faded p-3 mb-g d-flex mt-3">
                         <input type="text" id="js-filter-contacts" name="filter-contacts" class="form-control shadow-inset-2 form-control-lg" placeholder="Найти пользователя">
@@ -71,7 +82,7 @@
             <div class="row" id="js-contacts">
                 @foreach($users as $user)
                 <div class="col-xl-4">
-                    <div id="c_1" class="card border shadow-0 mb-g shadow-sm-hover" data-filter-tags="oliver kopyov">
+                    <div id="c_1" class="card border shadow-0 mb-g shadow-sm-hover" data-filter-tags="{{$user->name}}">
                         <div class="card-body border-faded border-top-0 border-left-0 border-right-0 rounded-top">
                             <div class="d-flex flex-row align-items-center">
                                 @if($user->status == "Онлайн")
@@ -91,7 +102,7 @@
                                         <i class="fal fa-angle-down d-inline-block ml-1 fs-md"></i>
                                     </a>
                                     <div class="dropdown-menu">
-                                        <a class="dropdown-item" href="edit.html">
+                                        <a class="dropdown-item" href="/edit/{{$user->id}}">
                                             <i class="fa fa-edit"></i>
                                         Редактировать</a>
                                         <a class="dropdown-item" href="/security/{{$user->id}}">

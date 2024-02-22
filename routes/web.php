@@ -1,8 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
-Route::get('/', [App\Http\Controllers\Controller::class, 'users'])->middleware('auth');
+use App\Http\Controllers;
+Route::get('/', [App\Http\Controllers\Controller::class, 'users']);
 
 Route::get('/register', [App\Http\Controllers\Controller::class, 'registerPage']);
 
@@ -16,7 +16,7 @@ Route::get('/media/{id}', [App\Http\Controllers\Controller::class, 'media']);
 
 Route::get('/create', [App\Http\Controllers\Controller::class, 'createUser']);
 
-Route::get('/edit', [App\Http\Controllers\Controller::class, 'editUser']);
+Route::get('/edit/{id}', [App\Http\Controllers\Controller::class, 'editUser']);
 
 Route::get('/security/{id}', [App\Http\Controllers\Controller::class, 'security']);
 
@@ -35,3 +35,7 @@ Route::post('/StatusChange/{id}', [App\Http\Controllers\UserController::class, '
 Route::post('/changeMail/{id}', [App\Http\Controllers\UserController::class, 'editMail']);
 
 Route::post('/edituser/{id}', [App\Http\Controllers\UserController::class, 'editMail']);
+
+Route::post('/editdate/{id}', [Controllers\UserController::class, 'editdate']);
+
+Route::post('/newUser', [Controllers\UserController::class, 'newUser']);

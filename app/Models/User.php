@@ -27,4 +27,9 @@ class User extends Authenticatable
 
     protected $table = 'users';
 
+    public function isAdmin()
+    {
+        return $this->permissions == 'admin';
+    }
+
 }

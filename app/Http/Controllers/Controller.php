@@ -22,8 +22,11 @@ class Controller extends BaseController
         return view('page_login');
     }
 
-    function page_profile() {
-        return view('page_profile');
+    function page_profile($id) {
+
+        $user = DB::table('users')->select('*')->where('id', $id)->get()->first();
+
+        return view('page_profile', ['user' => $user]);
     }
 
     function security($id) {

@@ -22,35 +22,83 @@ class ExampleTest extends TestCase {
     }
 
 
-    public function testget_user(): void {
+    public function testget_user() {
 
         $response = $this->get('/register');
 
         $response->assertStatus(200);
     }
 
-    public function testlogin(): void {
+    public function testlogin(){
 
         $response = $this->get('/login');
 
         $response->assertStatus(200);
     }
 
-    public function testanotherRegister(): void {
+    public function testanotherLogin(){
+
         $response = $this->get('/loginUser');
-
+        $response->assertStatus(405);
     }
-    public function testanotherLogin(Request $request): void {
-        $email = $request->post('email');
 
-        $password = $request->post('password');
+    public function testEmail() {
+        $email = DB::table('users')->select('email')->where('email', 'email')->exists();
+        $response = $this->get('/loginUser');
+        $response->assertStatus(405);
+    }
 
-        if (Auth::attempt(['email' => $email, 'password' => $password])) {
-            echo "true";
+    public function testmedia() {
 
-        } else {
-            $request->session()->flash('notValid', 'Неверный логин или пароль');
-        }
+        $response = $this->get('/media/2');
+        $response->assertStatus(200);
+    }
+
+    public function testsecurity() {
+
+        $response = $this->get('/security/2');
+        $response->assertStatus(200);
+    }
+
+    public function testedit() {
+
+        $response = $this->get('/edit/2');
+        $response->assertStatus(200);
+    }
+
+    public function teststatus() {
+
+        $response = $this->get('/status/2');
+        $response->assertStatus(200);
+    }
+
+    public function testusers() {
+
+        $response = $this->get('/');
+        $response->assertStatus(200);
+    }
+
+    public function testLogout() {
+        $response = $this->get('/logout');
+        $response->assertStatus(302);
+    }
+
+    public function testStatusEdit() {
+
+        $response = $this->get('/StatusChange/2');
+        $response->assertStatus(405);
+    }
+
+    public function testedituser() {
+
+        $response = $this->get('/edituser/2');
+        $response->assertStatus(405);
+    }
+
+    public function testcreate() {
+
+        $response = $this->get('/create');
+        $response->assertStatus(302);
     }
 
 

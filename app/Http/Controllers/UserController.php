@@ -18,14 +18,30 @@ class UserController extends Controller
         $this -> user = $userService;
     }
 
-    function register(Request $request)
-    {
-
+    function register(Request $request) {
         $email = $request->post('email');
 
         $password = $request->post('password');
 
         $hashedPassword = Hash::make($password);
+
+        $adress = "";
+
+        $status = "Онлайн";
+
+        $name = 'Не указано';
+
+        $workplace = 'Не указано';
+
+        $telephone = 'Не указан';
+
+        $vk = 'Не указано';
+
+        $telegram = "Не указано";
+
+        $instagram = "Не указано";
+
+        $image = "kot.jpg";
 
         $test = DB::table('users')->select('email')->where('email', $email)->exists();
 
@@ -34,7 +50,8 @@ class UserController extends Controller
             return redirect('/register');
         } else {
             DB::table('users')->insert(
-                ['email' => $email, 'password' => $hashedPassword]
+                ['email' => $email, 'password' => $hashedPassword, 'name' => $name, 'workplace' => $workplace, 'telephone' => $telephone,
+                    'adress' => $adress,'status' => $status, 'vk' => $vk, 'telegram' => $telegram, 'instagram' => $instagram,'avatar' => $image, 'updated_at' => date('Y-m-d H:i:s')]
             );
 
             $request->session()->flash('forLogin', 'Успешная регистрация!');
@@ -45,6 +62,7 @@ class UserController extends Controller
 
     function loginUser(Request $request)
     {
+
         if(!empty(Session::get('email'))) {
             $request->session()->flash('existsLogin', 'Вы уже вошли');
             return redirect('/login');
@@ -55,10 +73,19 @@ class UserController extends Controller
 
         $session = DB::table('users')->select('email')->where('email', $email)->get();
 
-        Session::put('email', $email);
-        $test = Session::get('email');
+        $permission = DB::table('users')->select('email')->where('email', $email)->where('permissions', 'admin')->exists();
+
 
         if (Auth::attempt(['email' => $email, 'password' => $password])) {
+
+            Auth::user()->isAdmin();
+
+            Session::put('email', $email);
+
+            if($permission) {
+                Session::put('permission', 'admin');
+            }
+
 
             return redirect('/');
         } else {
@@ -70,7 +97,9 @@ class UserController extends Controller
 
     function logout()
     {
+        Auth::logout();
         Session::forget('email');
+        Session::forget('permission');
         session_destroy();
         return redirect('/');
     }
@@ -78,6 +107,7 @@ class UserController extends Controller
     function delete($id)
     {
         DB::table('users')->where('id', $id)->delete();
+        Session::put('deleted', 'Пользователь успешно удалён...');
         return redirect('/');
     }
 
@@ -90,6 +120,7 @@ class UserController extends Controller
         DB::table('users')->where('id', $id)->update(
             ['status' => $status]
         );
+        Session::put('HasUpdated', 'Профиль успешно обновлён!');
         return redirect('/');
     }
 
@@ -120,6 +151,7 @@ class UserController extends Controller
             DB::table('users')->where('id', $id)->update(
                 ['email' => $email]
             );
+            Session::put('HasUpdated', 'Профиль успешно обновлён!');
         }
 
 
@@ -141,6 +173,7 @@ class UserController extends Controller
         DB::table('users')->where('id', $id)->update(
             ['name' => $name, 'workplace' => $workplace, 'telephone' => $telephone, 'adress' => $adress]
         );
+        Session::put('HasUpdated', 'Профиль успешно обновлён!');
         return redirect('/');
     }
 
@@ -180,7 +213,7 @@ class UserController extends Controller
         } else {
             DB::table('users')->insert(
                 ['email' => $email, 'password' => $hashedPassword, 'name' => $name, 'workplace' => $workplace, 'telephone' => $telephone,
-                 'adress' => $adress,'status' => $status, 'vk' => $vk, 'telegram' => $telegram, 'instagram' => $instagram,'avatar' => $image->store('uploads'), 'updated_at' => 0]
+                 'adress' => $adress,'status' => $status, 'vk' => $vk, 'telegram' => $telegram, 'instagram' => $instagram,'avatar' => $image->store('uploads'), 'updated_at' => date('Y-m-d H:i:s')]
             );
 
             $request->session()->flash('successCreate', 'Пользователь успешно добавлен!');

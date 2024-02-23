@@ -15,11 +15,11 @@
 </head>
     <body class="mod-bg-1 mod-nav-link">
         <nav class="navbar navbar-expand-lg navbar-dark bg-primary bg-primary-gradient">
-            <a class="navbar-brand d-flex align-items-center fw-500" href="users.html"><img alt="logo" class="d-inline-block align-top mr-2" src="img/logo.png"> Учебный проект</a> <button aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-target="#navbarColor02" data-toggle="collapse" type="button"><span class="navbar-toggler-icon"></span></button>
+            <a class="navbar-brand d-flex align-items-center fw-500" href="/"><img alt="logo" class="d-inline-block align-top mr-2" src="/img/logo.png"> Учебный проект</a> <button aria-controls="navbarColor02" aria-expanded="false" aria-label="Toggle navigation" class="navbar-toggler" data-target="#navbarColor02" data-toggle="collapse" type="button"><span class="navbar-toggler-icon"></span></button>
             <div class="collapse navbar-collapse" id="navbarColor02">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item active">
-                        <a class="nav-link" href="#">Главная <span class="sr-only">(current)</span></a>
+                        <a class="nav-link" href="/">Главная <span class="sr-only">(current)</span></a>
                     </li>
                 </ul>
                 <ul class="navbar-nav ml-auto">
@@ -53,10 +53,18 @@
                     <div class="alert alert-success">
                         {{Session::get('successCreate')}}
                     </div>{{session()->forget('successCreate')}}
+
+            @elseif(!empty(session()->get('HasUpdated')))
+                <div class="alert alert-success">
+                    {{Session::get('HasUpdated')}}
+                </div>{{session()->forget('HasUpdated')}}
+
+            @elseif(!empty(session()->get('deleted')))
+                    <div class="alert alert-success">
+                        {{Session::get('deleted')}}
+                    </div>{{session()->forget('deleted')}}
+
             @endif
-            <div class="alert alert-success">
-                Профиль успешно обновлен.{{Session::get('email')}}
-            </div>
             <div class="subheader">
                 <h1 class="subheader-title">
                     <i class='subheader-icon fal fa-users'></i> Список пользователей
@@ -64,8 +72,9 @@
             </div>
             <div class="row">
                 <div class="col-xl-12">
+                    @if(Session::get('permission') == "admin" && !empty(Session::get('email')))
                     <a class="btn btn-success" href="/create">Добавить</a>
-
+                    @endif
                     <div class="border-faded bg-faded p-3 mb-g d-flex mt-3">
                         <input type="text" id="js-filter-contacts" name="filter-contacts" class="form-control shadow-inset-2 form-control-lg" placeholder="Найти пользователя">
                         <div class="btn-group btn-group-lg btn-group-toggle hidden-lg-down ml-3" data-toggle="buttons">
@@ -93,14 +102,16 @@
                                     <span class="status status-danger mr-3">
                                 @endif
 
-                                    <span class="rounded-circle profile-image d-block " style="background-image:url('/{{$user->avatar}}'); background-size: cover;"></span>
+                             <a href="/profile/{{$user->id}}"><span class="rounded-circle profile-image d-block " style="background-image:url('/{{$user->avatar}}'); background-size: cover;"></span></a>
                                 </span>
                                 <div class="info-card-text flex-1">
+                                @if(Session::get('permission') == "admin" && !empty(Session::get('email')))
                                     <a href="javascript:void(0);" class="fs-xl text-truncate text-truncate-lg text-info" data-toggle="dropdown" aria-expanded="false">
                                        {{$user->name}}
-                                        <i class="fal fas fa-cog fa-fw d-inline-block ml-1 fs-md"></i>
+                                       <i class="fal fas fa-cog fa-fw d-inline-block ml-1 fs-md"></i>
                                         <i class="fal fa-angle-down d-inline-block ml-1 fs-md"></i>
                                     </a>
+
                                     <div class="dropdown-menu">
                                         <a class="dropdown-item" href="/edit/{{$user->id}}">
                                             <i class="fa fa-edit"></i>
@@ -120,6 +131,39 @@
                                             Удалить
                                         </a>
                                     </div>
+
+                                    @elseif(Session::get('email') == $user->email)
+                                        <a href="javascript:void(0);" class="fs-xl text-truncate text-truncate-lg text-info" data-toggle="dropdown" aria-expanded="false">
+                                       {{$user->name}}
+                                       <i class="fal fas fa-cog fa-fw d-inline-block ml-1 fs-md"></i>
+                                        <i class="fal fa-angle-down d-inline-block ml-1 fs-md"></i>
+                                        </a>
+
+                                        <div class="dropdown-menu">
+                                        <a class="dropdown-item" href="/edit/{{$user->id}}">
+                                            <i class="fa fa-edit"></i>
+                                        Редактировать</a>
+                                        <a class="dropdown-item" href="/security/{{$user->id}}">
+                                            <i class="fa fa-lock"></i>
+                                        Безопасность</a>
+                                        <a class="dropdown-item" href="/status/{{$user->id}}">
+                                            <i class="fa fa-sun"></i>
+                                        Установить статус</a>
+                                        <a class="dropdown-item" href="/media/{{$user->id}}">
+                                            <i class="fa fa-camera"></i>
+                                            Загрузить аватар
+                                        </a>
+                                        <a href="/delete{{$user->id}}" class="dropdown-item" onclick="return confirm('are you sure?');">
+                                            <i class="fa fa-window-close"></i>
+                                            Удалить
+                                        </a>
+                                    </div>
+
+                                    @else()
+                                        <a href="javascript:void(0);" class="fs-xl text-truncate text-truncate-lg text-info" data-toggle="dropdown" aria-expanded="false">
+                                       {{$user->name}}
+                                        </a>
+                                    @endif
                                     <span class="text-truncate text-truncate-xl">{{$user->workplace}}</span>
                                 </div>
                                 <button class="js-expand-btn btn btn-sm btn-default d-none" data-toggle="collapse" data-target="#c_1 > .card-body + .card-body" aria-expanded="false">

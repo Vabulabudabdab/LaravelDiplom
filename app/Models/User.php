@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\Request;
@@ -37,6 +38,28 @@ class User extends Authenticatable
         return $this->permissions == 'admin';
     }
 
+    function testReg(Request $request, $email, $password, $name, $workplace, $telephone, $adress, $status, $vk, $telegram, $instagram, $avatar) {
+
+
+        $test = DB::table('users')->select('email')->where('email', $email)->exists();
+
+        if ($test) {
+            $request->session()->flash('alreadyExists', 'Данный пользователь уже существует');
+
+            return redirect('/register');
+        } else {
+
+            DB::table('users')->insert(
+                ['email' => $email, 'password' => $password, 'name' => $name, 'workplace' => $workplace, 'telephone' => $telephone,
+                    'adress' => $adress,'status' => $status, 'vk' => $vk, 'telegram' => $telegram, 'instagram' => $instagram,'avatar' => $avatar, 'updated_at' => Carbon::today()]
+            );
+
+            $request->session()->flash('forLogin', 'Успешная регистрация!');
+
+            return redirect('/login');
+        }
+    }
+
     function register(Request $request) {
 
         $email = $request->post('email');
@@ -63,20 +86,8 @@ class User extends Authenticatable
 
         $image = "kot.jpg";
 
-        $test = DB::table('users')->select('email')->where('email', $email)->exists();
+        $this->testReg($request, $email, $hashedPassword, $name, $workplace, $telephone, $adress, $status, $vk, $telegram, $instagram, $image);
 
-        if ($test) {
-            $request->session()->flash('alreadyExists', 'Данный пользователь уже существует');
-            return redirect('/register');
-        } else {
-            DB::table('users')->insert(
-                ['email' => $email, 'password' => $hashedPassword, 'name' => $name, 'workplace' => $workplace, 'telephone' => $telephone,
-                    'adress' => $adress,'status' => $status, 'vk' => $vk, 'telegram' => $telegram, 'instagram' => $instagram,'avatar' => $image, 'updated_at' => date('Y-m-d H:i:s')]
-            );
-
-            $request->session()->flash('forLogin', 'Успешная регистрация!');
-            return redirect('/login');
-        }
 
     }
 
@@ -143,13 +154,8 @@ class User extends Authenticatable
 
         $email = $request->post('email');
 
-        $oldpass = $request->post('oldpassword');
-
         $newpass = $request->post('newpassword');
 
-
-        $hash = Hash::make($newpass);
-        $query = DB::table('users')->select('*')->where('id', $id)->get()->first();
 
         $existsUser = DB::table('users')->select('*')->where('email', $email)->exists();
 
@@ -206,8 +212,6 @@ class User extends Authenticatable
 
         $status = $request->post('status');
 
-        $avatar = $request->post('avatar');
-
         $vk = $request->post('vk');
 
         $telegram = $request->post('telegram');
@@ -218,21 +222,7 @@ class User extends Authenticatable
 
         $hashedPassword = Hash::make($password);
 
-        $test = DB::table('users')->select('email')->where('email', $email)->exists();
-
-        if ($test) {
-            $request->session()->flash('cantcreate', 'Данный пользователь уже существует');
-            return redirect('/');
-        } else {
-            DB::table('users')->insert(
-                ['email' => $email, 'password' => $hashedPassword, 'name' => $name, 'workplace' => $workplace, 'telephone' => $telephone,
-                    'adress' => $adress,'status' => $status, 'vk' => $vk, 'telegram' => $telegram, 'instagram' => $instagram,'avatar' => $image->store('uploads'), 'updated_at' => date('Y-m-d H:i:s')]
-            );
-
-            $request->session()->flash('successCreate', 'Пользователь успешно добавлен!');
-            return redirect('/');
-        }
-
+        $this->testReg($request, $email, $hashedPassword, $name, $workplace, $telephone, $adress, $status, $vk, $telegram, $instagram, $image->store('uploads'));
     }
 
 }

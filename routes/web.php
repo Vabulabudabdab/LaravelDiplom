@@ -24,7 +24,7 @@ Route::post('/loginUser', [App\Http\Controllers\UserController::class, 'loginUse
 
 Route::get('/logout', [App\Http\Controllers\UserController::class, 'logout'])->name('logout');
 
-Route::get('/delete{id}', [App\Http\Controllers\UserController::class, 'delete']);
+Route::get('/delete{id}', [App\Http\Controllers\UserController::class, 'deleteUser']);
 
 Route::post('/update/{id}', [App\Http\Controllers\ImagesController::class, 'update']);
 
